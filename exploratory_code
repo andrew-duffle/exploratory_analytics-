@@ -1,0 +1,37 @@
+file<-file.choose()
+datum<-read.csv(file,header=TRUE,sep=",",stringsAsFactors = FALSE)
+
+SaleDatum<-subset(datum,datum$Type=='sale')
+
+x=SaleDatum$Unsub.Rate
+
+summary(x)
+
+layout(matrix(c(2,1),nrow=2), widths=c(1,2))
+
+
+h<-hist(x, main = 'Histogram of Frequency X', col='#fdd02d')
+
+
+
+
+xfit <- seq(min(x), max(x), length = 100)
+mymean<-mean(x)
+mysd<-sd(x)
+yfit <- dnorm(x = xfit, mean = mymean, sd = mysd) 
+yfit <- yfit * diff(h$mids[1:2]) * length(x) 
+multiplier <- h$counts / h$density
+
+sd_x <- seq(mymean - 3 * mysd, mymean + 3 * mysd, by = mysd)
+sd_y <- dnorm(x = sd_x, mean = mymean, sd = mysd) * multiplier[1]
+
+
+lines(xfit, yfit, col = "#373737", lwd = 2)
+segments(x0 = sd_x, y0= 0, x1 = sd_x, y1 = sd_y, col = "firebrick4", lwd = 2)
+
+boxplot(x, horizontal = TRUE, axes=FALSE, main='5 Number Summary of X', col='#fdd02d')
+text(x=fivenum(x), labels =round(fivenum(x),digits=3), y=1.25)
+
+t.test(x, conf.level = .95)
+t.test(x, conf.level = .90)
+length(x)
